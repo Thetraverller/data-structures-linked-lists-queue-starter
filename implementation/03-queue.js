@@ -15,7 +15,7 @@ class Queue {
 
     dequeue() {
         // Remove node from front of queue (linked list)
-        
+
         // Write your hypothesis on the time complexity of this method here
     }
 

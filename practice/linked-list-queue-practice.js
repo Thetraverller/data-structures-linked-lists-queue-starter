@@ -32,21 +32,19 @@ class SinglyLinkedList {
     listLength() {
         // Returns the length of the list
         // Implement in O(n) and in O(1) time complexity
-
-        //O(n)
+        // O(n)
         let length = 0;
         let current = this.head;
 
-        while (current) {
-            current = current.next;
+        while(current) {
             length++;
+            current = current.next;
         }
+
         return length;
 
         // O(1)
-        // This requires changing the implementation of this class:
-        // Add a length property to the constructor and increment/decrement whenever we call functions that add/remove nodes
-        // then we can just reference this.length
+        // Add length property to the list to achieve this
     }
 
     sumOfNodes() {
@@ -54,44 +52,30 @@ class SinglyLinkedList {
         let sum = 0;
         let current = this.head;
 
-        while (current) {
+        while(current) {
             sum += current.value;
             current = current.next;
         }
+
         return sum;
-
         // Write your hypothesis on the time complexity of this method here
-        // O(n) time
-
-        //both sum and average (below) can be ran in constant time at the cost of space
-        //add a length and a sum property to the constructor and update appropriately as we add/remove nodes
+        // O(n)
     }
 
     averageValue() {
         // Returns the average value of all the nodes
-        let length = 0;
-        let sum = 0;
-        let current = this.head;
-
-        while (current) {
-            sum += current.value;
-            length++;
-            current = current.next;
-        }
-        return sum/length;
-
+        return this.sumOfNodes() / this.listLength();
         // Write your hypothesis on the time complexity of this method here
         // O(n)
     }
 
     findNthNode(n) {
         // Returns the node at the nth index from the head
+        if (n < 0) return null;
 
-        let position = 0;
         let current = this.head;
 
-        while (current && position < n) {
-            position++;
+        for (let i = 1; i <= n; i++) {
             current = current.next;
         }
 
@@ -105,54 +89,77 @@ class SinglyLinkedList {
         // Returns the middle node
         // Implement this as a singly linked list then as a doubly linked list
             // How do the implementation for singly and doubly vary if at all?
+        const len = this.listLength();
+        const mid = len % 2 === 0 ? (len / 2) - 1: Math.floor(len / 2);
 
-        let mid = Math.floor((this.listLength() - 1) / 2);
         return this.findNthNode(mid);
 
         // Write your hypothesis on the time complexity of this method here
         // O(n)
-        // finding list length is O(n)
-        // finding the Nth is O(n)
-        // O(2n) => O(n)
     }
 
     reverse() {
         // Returns a new reversed version of the linked list
+        const newList = new SinglyLinkedList();
 
-        let reversed = new SinglyLinkedList();
-        let length = this.listLength();
+        const len = this.listLength();
 
-        while (length > 0) {
-            let tail = this.findNthNode(length-1);
-            reversed.addToTail(tail.value);
-            length--;
+        let newNode;
+
+        for (let i = len - 1; i >= 0; i--) {
+            newNode = this.findNthNode(i);
+            newList.addToTail(newNode.value);
         }
-        return reversed;
+
+        return newList;
 
         // Write your hypothesis on the time complexity of this method here
-        // O(n)
-        // We traverse to the end of the original list every time [O(n)]
-        // then once there we perform addToTail, which is also O(n)
-        // so for every n elements, we have to perform n operations => n^2
+        // O(n + 3n2) => O(n2)
     }
 
     reverseInPlace() {
         // Reverses the linked list in-place
+        const len = this.listLength();
 
-        let current = this.head;
-        let previous = null;
+        let index = len - 1;
+        let node1 = this.findNthNode(index);
 
-        while(current) {
+        while (node1) {
+            this.addToTail(node1.value);
 
-            let next = current.next;
-            if(next === null){this.head = current}
-
-            current.next = previous;
-            previous = current;
-            current = next;
+            node1 = this.findNthNode(index - 1);
+            index--;
         }
 
-        return this;
+        let node2 = this.head;
+
+        for (let i = 0; i < len; i++) {
+            const next = node2.next;
+
+            node2.next = null;
+            this.head = next;
+
+            node2 = next;
+        }
+
+        // Write your hypothesis on the time complexity of this method here
+        // O(2n + 2n2 + n) => O(n2)
+    }
+
+    print() {
+        // Print out the linked list
+        const len = this.listLength();
+
+        if (len > 0) {
+            let current = this.head;
+
+            while(current) {
+                console.log(current.value)
+                current = current.next;
+            }
+
+            console.log("NULL");
+        }
 
         // Write your hypothesis on the time complexity of this method here
         // O(n)
@@ -193,64 +200,90 @@ class DoublyLinkedList {
         // Returns the middle node
         // Implement this as a singly linked list then as a doubly linked list
             // How do the implementation for singly and doubly vary if at all?
-        // The doubly linked implementation moves inwards from both sides
+        let len = 0;
+        let current = this.head;
 
-    let front = this.head;
-    let back = this.tail;
+        while(current) {
+            len++;
+            current = current.next;
+        }
 
-    while (front !== back && front.next !== back) {
-        front = front.next;
-        back = back.prev;
-    }
+        const mid = len % 2 === 0 ? (len / 2) - 1: Math.floor(len / 2);
+        current = this.head;
 
-    return front;
+        for (let i = 1; i <= mid; i++) {
+            current = current.next;
+        }
 
+        return current;
         // Write your hypothesis on the time complexity of this method here
         // O(n)
     }
 
     reverse() {
         // Returns a new reversed version of the linked list
+        const newList = new DoublyLinkedList();
 
-        let reversed = new DoublyLinkedList();
         let current = this.tail;
-        reversed.head = current;
 
         while (current) {
-
-            let oldPrev = current.prev;
-            let oldNext = current.next;
-
-            current.next = oldPrev;
-            current.prev = oldNext;
-
-            current = current.next;
+            newList.addToTail(current.value)
+            current = current.prev;
         }
 
-        reversed.tail = current;
-
-        //console.log("reversed", reversed);
-        return reversed;
-
+        return newList;
         // Write your hypothesis on the time complexity of this method here
-        // O(n)
+        // O(1);
     }
 
     reverseInPlace() {
         // Reverses the linked list in-place
-        let current = this.tail;
-        this.head = current;
-        while (current) {
+        let len = 0;
+        let node1 = this.tail
 
-            let oldPrev = current.prev;
-            let oldNext = current.next;
+        while (node1) {
+            this.addToTail(node1.value);
+            node1 = node1.prev;
+            len++;
+        }
 
-            current.next = oldPrev;
-            current.prev = oldNext;
+        let node2 = this.head;
 
+        for (let i = 0; i < len; i++) {
+            const next = node2.next;
+
+            node2.prev = null;
+            node2.next = null;
+            this.head = next;
+
+            node2 = next;
+        }
+
+        this.head.prev = null;
+        // Write your hypothesis on the time complexity of this method here
+        // O(2n) => O(n);
+    }
+
+    print() {
+        // Print out the linked list
+        let len = 0;
+        let current = this.head;
+
+        while(current) {
+            len++;
             current = current.next;
         }
-        this.tail = current;
+
+        if (len > 0) {
+            let current = this.head;
+
+            while(current) {
+                console.log(current.value)
+                current = current.next;
+            }
+
+            console.log("NULL");
+        }
 
         // Write your hypothesis on the time complexity of this method here
         // O(n)
