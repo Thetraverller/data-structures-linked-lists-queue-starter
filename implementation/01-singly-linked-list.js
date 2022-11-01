@@ -57,44 +57,42 @@ class SinglyLinkedList {
 
     removeFromHead() {
         // Remove node at head
-        const head = this.head;
+        if (!this.head) {return undefined}
 
-        if (this.head) {
-            this.head = this.head.next;
-            this.length--;
-            return head;
-        }
+        let removed = this.head;
+        this.head = this.head.next;
+        this.length--;
+        return removed;
 
         // Write your hypothesis on the time complexity of this method here
-        // O(1)
+        // Constant time, we go directly to references
     }
 
     removeFromTail() {
         // Remove node at tail
-        let tail;
+        if (!this.head) {return undefined}
 
-        if (this.head) {
+        let removed;
 
-            if (this.length === 1) {
-                tail = this.head;
-                this.head = null;
-            } else {
-                let penultimate = this.head;
-
-                for (let i = 1; i < this.length - 1; i++) {
-                    penultimate = penultimate.next;
-                }
-
-                tail = penultimate.next;
-                penultimate.next = null;
-            }
-
+        if (this.length === 1) {
+            removed = this.head;
+            this.head = null;
             this.length--;
-            return tail;
+            return removed;
         }
 
+        let current = this.head;
+        while (current.next.next) {
+            current = current.next;
+        }
+        removed = current.next;
+        current.next = null;
+
+        this.length--;
+        return removed;
+
         // Write your hypothesis on the time complexity of this method here
-        // O(n)
+        // O(n), must traverse through the whole list
     }
 
     peekAtHead() {
